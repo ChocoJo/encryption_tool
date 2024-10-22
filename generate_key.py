@@ -30,3 +30,23 @@ def ensure_directory_exists(file_path):
         else:
             logging.info("Operation aborted by user. Directory not created.")
             sys.exit(0)
+
+def generate_key(file_path='secret.key'):
+    ensure_directory_exists(file_path)
+ 
+    if os.path.exists(file_path):
+        if not get_user_confirmation(f"File '{file_path}' already exists. Do you want to overwrite it? (y/n): "):
+            logging.info("Operation aborted by user. Key not overwritten.")
+            sys.exit(0)
+ 
+    try:
+        key = Fernet.generate_key()
+        with open(file_path, 'wb') as key_file:
+            key_file.write(key)
+        logging.info(f"Encryption key generated and saved to '{file_path}'")
+    except PermissionError:
+        logging.error(f"Permission denied: Unable to write to '{file_path}'. Please check your file permissions.")
+        sys.exit(1)
+    except Exception as e:
+        logging.error(f"Failed to write key to file {file_path}: {e}")
+        sys.exit(1)
