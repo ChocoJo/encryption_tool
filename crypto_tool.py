@@ -105,3 +105,19 @@ def decrypt_file(encrypted_file_path, key_path):
     except Exception as e:
         logging.error(f"Error during decryption: {e}")
         exit(1)
+
+def main():
+    parser = argparse.ArgumentParser(description="Encrypt or decrypt files using a symmetric key.")
+    parser.add_argument('mode', choices=['encrypt', 'decrypt'], help="Mode of operation: 'encrypt' or 'decrypt'")
+    parser.add_argument('file', help="The file to encrypt or decrypt")
+    parser.add_argument('--key', required=True, help="Path to the encryption key file")
+ 
+    args = parser.parse_args()
+ 
+    if args.mode == 'encrypt':
+        encrypt_file(args.file, args.key)
+    elif args.mode == 'decrypt':
+        decrypt_file(args.file, args.key)
+ 
+if __name__ == "__main__":
+    main()
