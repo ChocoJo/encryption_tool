@@ -60,3 +60,48 @@ def encrypt_file(file_path, key_path):
     except Exception as e:
         logging.error(f"Error during encryption: {e}")
         exit(1)
+
+def decrypt_file(encrypted_file_path, key_path):
+    if not encrypted_file_path.endswith('.enc'):
+        logging.error("The file is not recognized as an encrypted file.")
+        exit(1)
+ 
+    if not os.path.exists(encrypted_file_path):
+        logging.error(f"Encrypted file '{encrypted_file_path}' not found.")
+        exit(1)
+
+    key = load_key(key_path)
+    fernet = Fernet(key)
+
+    try:
+        with open(encrypted_file_path, 'rb') as encrypted_file:
+            encrypted_data = encrypted_file.read()
+
+        decrypted_data = fernet.decrypt(encrypted_data)
+        original_file_path = encrypted_file_path.replace('.enc', '')
+ 
+
+        if os.path.exists(original_file_path):
+            while True:
+                confirmation = input(f"File '{original_file_path}' already exists. Overwrite (o), Save as new (n), or Cancel (c)? ").strip().lower()
+                if confirmation == 'o':
+                    logging.info(f"Overwriting '{original_file_path}'.")
+                    break
+                elif confirmation == 'n':
+                    original_file_path = input("Enter a new filename (without extension): ") + '.txt'
+                    break
+                elif confirmation == 'c':
+                    logging.info("Operation aborted by the user.")
+                    exit(0)
+                else:
+                    logging.warning("Invalid input. Please press 'o' to overwrite, 'n' to save as a new file, or 'c' to cancel.")
+                    print("Invalid input. Please press 'o' to overwrite, 'n' to save as a new file, or 'c' to cancel.")
+                   
+
+        with open(original_file_path, 'wb') as decrypted_file:
+            decrypted_file.write(decrypted_data)
+
+        logging.info(f"File '{encrypted_file_path}' decrypted and saved as '{original_file_path}'.")
+    except Exception as e:
+        logging.error(f"Error during decryption: {e}")
+        exit(1)
