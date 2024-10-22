@@ -50,3 +50,11 @@ def generate_key(file_path='secret.key'):
     except Exception as e:
         logging.error(f"Failed to write key to file {file_path}: {e}")
         sys.exit(1)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate and save an encryption key.")
+    parser.add_argument('--keyfile', type=str, help="File to save the key", default="secret.key")
+ 
+    args = parser.parse_args()
+ 
+    generate_key(args.keyfile)
